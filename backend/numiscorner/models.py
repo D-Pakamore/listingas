@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 class Coin(models.Model):
     title = models.CharField(max_length=255)
@@ -21,7 +22,7 @@ class Coin(models.Model):
     coinage_type = models.CharField(max_length=100)
     diameter = models.FloatField()
     first_issue_date = models.CharField(max_length=100)
-    mintage = models.IntegerField
+    mintage = models.IntegerField()
     period = models.CharField(max_length=100)
     ruler_name = models.CharField(max_length=100)
     theoretical_coin_weight = models.FloatField()
@@ -42,15 +43,17 @@ class Coin(models.Model):
     certification = models.CharField(max_length=100)
     certification_number = models.IntegerField()
     series_theme = models.CharField(max_length=100)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return ' '.join([self.denomination, self.country])
 
 class Image(models.Model):
     coin = models.ForeignKey(Coin, on_delete=models.CASCADE)
-    obverse_image_url = models.CharField(max_length=255)
-    reverse_image_url  = models.CharField(max_length=255)
-    obverse_image = models.ImageField(upload_to='numiscorner')
-    reverse_image = models.ImageField(upload_to='numiscorner')
+    obverse_image_url = models.CharField(max_length=255, default='default')
+    reverse_image_url  = models.CharField(max_length=255, default='default')
+    obverse_image = models.ImageField(upload_to='numiscorner', default='../media/numiscorner/default_o.jpg')
+    reverse_image = models.ImageField(upload_to='numiscorner', default='../media/numiscorner/default_r.jpg')
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)

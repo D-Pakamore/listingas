@@ -13,6 +13,12 @@ class CoinSerializer(serializers.HyperlinkedModelSerializer):
         model = Coin
         fields = coin_fields + ['image_set']
 
+class CoinFileUploadSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        coin_fields = [field.name for field in Coin._meta.get_fields()][2:-2]
+        model = Coin
+        fields = coin_fields
+
         
 
 

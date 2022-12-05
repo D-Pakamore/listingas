@@ -1,5 +1,6 @@
 import Layount from '../../components/Layout'
 import CollapsibleTable from '../../components/CollapsibleTable'
+import ToolBar from '../../components/ToolBar'
 import axios from 'axios';
 
 export default function Home({data, status}) {
@@ -12,6 +13,7 @@ export default function Home({data, status}) {
   } else {
     return (
       <Layount>
+        <ToolBar></ToolBar>
         <CollapsibleTable listOfDicts={data}></CollapsibleTable>
       </Layount>
     )

@@ -11,6 +11,7 @@ class ImageAdmin(admin.ModelAdmin):
 
 @admin.register(Coin)
 class CoinAdmin(admin.ModelAdmin):
+    readonly_fields = ['date_created', 'date_modified']
     all_fields = [field.name for field in Coin._meta.get_fields()][2:]
     list_display = ['country', 'denomination', 'year']
     fields = all_fields
