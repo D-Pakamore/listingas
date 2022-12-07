@@ -11,10 +11,8 @@ import { Input } from '@mui/material';
 import { useRef } from 'react';
 import { getUserData } from './myMethods';
 import axios from 'axios';
-import Router from 'next/router'
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
-import ReplayCircleFilledTwoToneIcon from '@mui/icons-material/ReplayCircleFilledTwoTone';
+import InfoSlide from './InfoSlide';
+
 
 
 const Nav = () => {
@@ -82,17 +80,7 @@ const Nav = () => {
                 </AppBar>
             </Box>
             {updateMessage != null ?
-                <Stack sx={{ zIndex: '1', backgroundColor: '#c6e2e9', width: '100%', position: 'absolute'}}>
-                    <Alert sx={{width: '100%', justifyContent: 'center'}} severity="success">{updateMessage.data.message}</Alert>
-                    <Alert sx={{width: '100%', justifyContent: 'center'}} severity="warning">
-                        total rows skipped: {updateMessage.data.skipped_rows.length}<br />
-                        skipped rows: {updateMessage.data.skipped_rows.join(', ')}
-                    </Alert>
-                    <IconButton onClick={()=> Router.reload()} component='label' sx={{ flexDirection:'column', fontSize: '14px', padding: '2px' }}>
-                        <p style={{margin:'0'}}>Click to refresh</p>
-                        <ReplayCircleFilledTwoToneIcon></ReplayCircleFilledTwoToneIcon>
-                    </IconButton>
-                </Stack> : ''
+                <InfoSlide/> : ''
             }
         </>
     );

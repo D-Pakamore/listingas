@@ -15,7 +15,7 @@ const AlertDialog = ({ toggleOpen }) => {
 
   return (
     <div>
-      <Dialog
+      <Dialog sx={{ height:'0px'}}
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"

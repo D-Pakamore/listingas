@@ -6,50 +6,39 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import MessageForm from './MessageInput';
+import MessageInput from './MessageInput';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import { getUserData } from './myMethods';
 import Box from '@mui/material/Box';
+import { deleteUserMessageRequest } from '../pages/api/api';
 
-export default function Information({ messages }) {
-  const [messagesState, setMessagesState] = React.useState(messages)
+const MessageBoard = ({ messageData }) => {
+  //state
+  const [messages, setMessages] = React.useState(messageData)
 
+  //functions
   const addMessage = (newMessage) => {
-    const cleanMessages = [...messagesState]
+    let cleanMessages = [...messages]
+
     cleanMessages.push(newMessage)
-    setMessagesState(cleanMessages)
+    setMessages(cleanMessages)
   }
 
-  const deleteMessage = (deletedMessageId) => {
+  async function deleteMessage(deletedMessageId){
     let cleanMessages = []
 
-    messagesState.map((message) => {
+    messages.map((message) => {
       if (message.id != deletedMessageId) {
         cleanMessages.push(message)
       }
     })
+    setMessages(cleanMessages)
 
-    setMessagesState(cleanMessages)
+    const res = await deleteUserMessageRequest(deletedMessageId)
   };
-
-  const deleteRequest = (messageId) => {
-    const userData = getUserData()
-    const { headers } = userData
-
-    axios({
-      url: `http://127.0.0.1:8000/information/${messageId}`,
-      method: "DELETE",
-      headers: headers,
-    })
-    .then((response) => {
-      if (response.status > 200 && response.status < 400) {
-        deleteMessage(messageId)
-      }
-    })
-    .catch(responseErr => console.log(responseErr))
-  };
+  
 
   return (
     <Box sx={{ backgroundColor: '#F9F6EE', width: '364px' }}>
@@ -62,7 +51,7 @@ export default function Information({ messages }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {messagesState.map((message) => (
+            {messages.map((message) => (
               <TableRow
                 key={message.id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -71,7 +60,7 @@ export default function Information({ messages }) {
                   {message.username}
                 </TableCell>
                 <TableCell align="right">{message.message}
-                  <IconButton variant="contained" onClick={() => deleteRequest(message.id)}>
+                  <IconButton variant="contained" onClick={() => deleteMessage(message.id)}>
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>
@@ -80,7 +69,10 @@ export default function Information({ messages }) {
           </TableBody>
         </Table>
       </TableContainer>
-      <MessageForm addMessage={addMessage} sx={{ backgroundColor: 'red' }} />
+      {/* callback funkcija -> funkcija peduodama vaikui ten iškviečiama ir gražina tėviniam responsa */}
+      <MessageInput addMessage={addMessage} />
     </Box>
   );
 }
+
+export default MessageBoard;

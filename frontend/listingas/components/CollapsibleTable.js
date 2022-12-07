@@ -67,8 +67,8 @@ function Row(props) {
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell sx={{ width: '20px' }}>
-          <IconButton onClick={() => deleteRequest(row.id, setDataSet, dataSet)} size="small" aria-label="Delete Coin">
-            <DeleteForeverTwoToneIcon></DeleteForeverTwoToneIcon>
+          <IconButton size="small" aria-label="Delete Coin" onClick={() => deleteRequest(row.id, setDataSet, dataSet)} >
+            <DeleteForeverTwoToneIcon/>
           </IconButton>
           <IconButton
             aria-label="expand row"

@@ -4,33 +4,19 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { getUserData } from './myMethods';
 import axios from 'axios';
+import { createUserMessageRequest } from '../pages/api/api';
 
-export default function MessageForm({ addMessage }) {
+export default function MessageInput({ addMessage }) {
+
   const postMessage = async (event) => {
     event.preventDefault();
-    const tmpData = new FormData(event.currentTarget);
-    const { headers, id, user } = getUserData()
-
+    const {id, user } = getUserData()
     //getting user message
+    const tmpData = new FormData(event.currentTarget);
     const message = tmpData.get('message')
-
-
-    await axios({
-      url: "http://127.0.0.1:8000/information/",
-      method: "POST",
-      headers: headers,
-      data: {
-        message: message,
-        user: id,
-      },
-    })
-    .then((response) => {
-      if (response.status > 199 && response.status < 400) {
-        const { data } = response;
-        addMessage(data)
-      }
-    })
-    .catch(response_2 => console.log(response_2))
+    
+    const { data } = await createUserMessageRequest(message, id)
+    addMessage(data)
   }
 
   return (

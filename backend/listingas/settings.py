@@ -25,11 +25,7 @@ LOGIN_REDIRECT_URL = "/"
 
 # this fixes cors error when posting json data from front end
 CORS_ORIGIN_ALLOW_ALL = True 
-# CROS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',

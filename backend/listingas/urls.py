@@ -10,8 +10,6 @@ from rest_framework.authtoken import views
 
 
 router = routers.DefaultRouter()
-#user_authentication
-# router.register(r'groups', auth_views.GroupViewSet)
 
 router.register(r'information', quickstart_views.InformationBoardViewSet)
 router.register(r'numiscorner_coins', numiscorner_views.CoinViewSet)

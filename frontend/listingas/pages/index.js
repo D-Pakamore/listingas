@@ -1,5 +1,5 @@
 import Layount from '../components/Layout';
-import Information from '../components/MessageBoard';
+import MessageBoard from '../components/MessageBoard';
 import axios from 'axios';
 import SignIn from '../components/SignIn';
 
@@ -7,7 +7,7 @@ export default function Home({data, status, message}) {
   if (status == 200) {
     return (
       <Layount>
-        <Information messages={data}></Information>
+        <MessageBoard messageData={data}></MessageBoard>
       </Layount>
     )
   } else {
@@ -37,7 +37,6 @@ export async function getServerSideProps(context) {
 
   const {status} = response != undefined ? response : {status: 404}
   const {data} = response != undefined ? response : {data: null}
-
   return {
     props: {
       data: data,
