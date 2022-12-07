@@ -5,44 +5,32 @@ import Container from '@mui/material/Container';
 import { getUserData } from './myMethods';
 import axios from 'axios';
 
-export default function MessageForm({addMessage}) {
+export default function MessageForm({ addMessage }) {
   const postMessage = async (event) => {
     event.preventDefault();
     const tmpData = new FormData(event.currentTarget);
-    const userData = getUserData()
-    const token = userData.token
-    const headers = {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-      Authorization: `Bearer ${token}`,
-    }
-  
-    //getting user details
-    const user_id = userData.id
-    const username = userData.user
+    const { headers, id, user } = getUserData()
+
+    //getting user message
     const message = tmpData.get('message')
 
-    try {
-      await axios({
-        url: "http://127.0.0.1:8000/information/",
-        method: "POST",
-        headers: headers,
-        data: {
-          message: message,
-          user: user_id,
-        },
-      })
-      .then((response) => {
-        //if username and password exist
-        if (response.status > 199 && response.status < 400) {
-          const { data } = response;
-          addMessage(data)
 
-        }
-      })
-    } catch (response_2) {
-      console.log(response_2);
-    }
+    await axios({
+      url: "http://127.0.0.1:8000/information/",
+      method: "POST",
+      headers: headers,
+      data: {
+        message: message,
+        user: id,
+      },
+    })
+    .then((response) => {
+      if (response.status > 199 && response.status < 400) {
+        const { data } = response;
+        addMessage(data)
+      }
+    })
+    .catch(response_2 => console.log(response_2))
   }
 
   return (

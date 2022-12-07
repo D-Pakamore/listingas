@@ -9,7 +9,8 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
 class CoinSerializer(serializers.HyperlinkedModelSerializer):
     image_set = ImageSerializer(read_only=True, many=True)
     class Meta:
-        coin_fields = [field.name for field in Coin._meta.get_fields()][2:]
+        coin_fields = [field.name for field in Coin._meta.get_fields()][1:]
+        print(coin_fields)
         model = Coin
         fields = coin_fields + ['image_set']
 

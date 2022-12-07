@@ -13,6 +13,27 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import DeleteForeverTwoToneIcon from '@mui/icons-material/DeleteForeverTwoTone';
+import { getUserData, deleteItem } from './myMethods';
+import axios from 'axios';
+
+const deleteRequest = (id, setDataSet, dataSet) => {
+  const userData = getUserData()
+  const { headers } = userData
+
+
+  axios({
+    url: `http://127.0.0.1:8000/numiscorner_coins/${id}`,
+    method: "DELETE",
+    headers: headers,
+  })
+    .then((response) => {
+      if (response.status > 200 && response.status < 400) {
+        setDataSet(deleteItem(id, dataSet))
+      }
+    })
+    .catch(response => { console.log(response) })
+}
 
 const restruturizeDict = (coinData) => {
   let result = []
@@ -22,13 +43,12 @@ const restruturizeDict = (coinData) => {
     let dict = {}
     dict[object[0]] = object[1]
 
-    if (object[0] != "image_set") {
+    if (object[0] != "image_set" && object[0] != "id") {
       if (groupsByFour.push(dict) === 4) {
         result.push(groupsByFour)
         groupsByFour = []
       }
     }
-
   });
 
   if (groupsByFour.length != 0) {
@@ -39,14 +59,17 @@ const restruturizeDict = (coinData) => {
 }
 
 function Row(props) {
-  const { row } = props;
+  const { row, setDataSet, dataSet } = props;
   const [open, setOpen] = React.useState(false);
   const groupsByFour = restruturizeDict(row);
 
   return (
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-        <TableCell>
+        <TableCell sx={{ width: '20px' }}>
+          <IconButton onClick={() => deleteRequest(row.id, setDataSet, dataSet)} size="small" aria-label="Delete Coin">
+            <DeleteForeverTwoToneIcon></DeleteForeverTwoToneIcon>
+          </IconButton>
           <IconButton
             aria-label="expand row"
             size="small"
@@ -55,7 +78,7 @@ function Row(props) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row">
+        <TableCell sx={{ width: '135px' }} scope="row">
           <img
             style={{ width: "100px" }}
             src={row.image_set[0].obverse_image}
@@ -63,7 +86,7 @@ function Row(props) {
             loading="lazy"
           />
         </TableCell>
-        <TableCell component="th" scope="row">
+        <TableCell scope="row">
           <img
             style={{ width: "100px" }}
             src={row.image_set[0].reverse_image}
@@ -73,7 +96,7 @@ function Row(props) {
         </TableCell>
         <TableCell>{row.country}</TableCell>
         <TableCell>{row.denomination}</TableCell>
-        <TableCell align="left">{row.year}</TableCell>
+        <TableCell>{row.year}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -92,7 +115,7 @@ function Row(props) {
                         ))}
                       </TableRow>
                     </TableHead>
-                    <TableBody>
+                    <TableBody sx={{ height: '33px' }}>
                       <TableRow>
                         {list.map((dict, index) => (
                           <TableCell key={index}>{Object.values(dict)[0]}</TableCell>
@@ -110,26 +133,8 @@ function Row(props) {
   );
 }
 
-// Row.propTypes = {
-//   row: PropTypes.shape({
-//     calories: PropTypes.number.isRequired,
-//     carbs: PropTypes.number.isRequired,
-//     fat: PropTypes.number.isRequired,
-//     history: PropTypes.arrayOf(
-//       PropTypes.shape({
-//         amount: PropTypes.number.isRequired,
-//         customerId: PropTypes.string.isRequired,
-//         date: PropTypes.string.isRequired,
-//       }),
-//     ).isRequired,
-//     name: PropTypes.string.isRequired,
-//     price: PropTypes.number.isRequired,
-//     protein: PropTypes.number.isRequired,
-//   }).isRequired,
-// };
-
 export default function CollapsibleTable({ listOfDicts }) {
-  const dataSet = listOfDicts
+  const [dataSet, setDataSet] = React.useState(listOfDicts)
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -145,7 +150,7 @@ export default function CollapsibleTable({ listOfDicts }) {
         </TableHead>
         <TableBody>
           {dataSet.map((data, index) => (
-            <Row key={index} row={data} />
+            <Row key={index} row={data} setDataSet={setDataSet} dataSet={dataSet} />
           ))}
         </TableBody>
       </Table>
