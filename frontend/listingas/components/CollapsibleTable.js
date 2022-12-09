@@ -1,5 +1,4 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -14,26 +13,6 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import DeleteForeverTwoToneIcon from '@mui/icons-material/DeleteForeverTwoTone';
-import { getUserData, deleteItem } from './myMethods';
-import axios from 'axios';
-
-const deleteRequest = (id, setDataSet, dataSet) => {
-  const userData = getUserData()
-  const { headers } = userData
-
-
-  axios({
-    url: `http://127.0.0.1:8000/numiscorner_coins/${id}`,
-    method: "DELETE",
-    headers: headers,
-  })
-    .then((response) => {
-      if (response.status > 200 && response.status < 400) {
-        setDataSet(deleteItem(id, dataSet))
-      }
-    })
-    .catch(response => { console.log(response) })
-}
 
 const restruturizeDict = (coinData) => {
   let result = []
@@ -58,8 +37,7 @@ const restruturizeDict = (coinData) => {
   return result
 }
 
-function Row(props) {
-  const { row, setDataSet, dataSet } = props;
+function Row({ row, deleteCoin }) {
   const [open, setOpen] = React.useState(false);
   const groupsByFour = restruturizeDict(row);
 
@@ -67,7 +45,7 @@ function Row(props) {
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell sx={{ width: '20px' }}>
-          <IconButton size="small" aria-label="Delete Coin" onClick={() => deleteRequest(row.id, setDataSet, dataSet)} >
+          <IconButton size="small" aria-label="Delete Coin" onClick={() => deleteCoin(row.id)}>
             <DeleteForeverTwoToneIcon/>
           </IconButton>
           <IconButton
@@ -133,8 +111,8 @@ function Row(props) {
   );
 }
 
-export default function CollapsibleTable({ listOfDicts }) {
-  const [dataSet, setDataSet] = React.useState(listOfDicts)
+export default function CollapsibleTable({deleteCoin, coinData }) {
+  
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -149,8 +127,8 @@ export default function CollapsibleTable({ listOfDicts }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {dataSet.map((data, index) => (
-            <Row key={index} row={data} setDataSet={setDataSet} dataSet={dataSet} />
+          {coinData.map((data, index) => (
+            <Row key={index} row={data} deleteCoin={deleteCoin}/>
           ))}
         </TableBody>
       </Table>

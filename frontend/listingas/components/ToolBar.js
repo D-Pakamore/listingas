@@ -5,17 +5,11 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
-import Button from '@mui/material/Button';
-import Link from 'next/link';
 import { Input } from '@mui/material';
-import { useRef } from 'react';
-import { getUserData } from './myMethods';
-import axios from 'axios';
-import InfoSlide from './InfoSlide';
+import InfoSlide from './popups/InfoSlide';
+import { uploadCsvRequest } from '../pages/api/api';
 
-
-
-const Nav = () => {
+const ToolBar = ({handleSearch}) => {
     const [updateMessage, setUpdateMessage] = React.useState(null)
 
     const fileUploadHandle = (e) => {
@@ -37,30 +31,9 @@ const Nav = () => {
         }
     }
 
-    const uploadRequest = (file) => {
-        const userData = getUserData()
-        const token = userData.token
-        const headers = {
-            "Content-Type": "multipart/form-data",
-            "Accept": "application/json",
-            Authorization: `Bearer ${token}`,
-        }
-
-        axios({
-            url: `http://127.0.0.1:8000/create_numiscorner_coin`,
-            method: "POST",
-            headers: headers,
-            data: {
-                data: file
-            }
-        }).then((response) => {
-            //page does reload but console.log does not work after (need to store data to session then use it after reload)
-            const { data } = response
-            sessionStorage.setItem('csv_upload_res', data)
-            setUpdateMessage(response)
-        }).catch((response) => {
-            console.log(response);
-        })
+    const uploadRequest = async (file) => {
+        const response = uploadCsvRequest(file)
+        response.then(response => {setUpdateMessage(response.data)}).catch(response => console.log(response))  
     }
 
     return (
@@ -68,23 +41,26 @@ const Nav = () => {
             <Box sx={{ display: 'flex' }}>
                 <AppBar sx={{ backgroundColor: 'grey', position: 'relative', maxHeight: '40px' }}>
                     <Toolbar sx={{ display: 'contents' }}>
-                        <Box sx={{ display: { xs: 'none', sm: 'block' }, textAlign: 'center' }}>
-                            <Tooltip title="Upload File">
-                                <IconButton component='label' sx={{ padding: '2px' }}>
-                                    <UploadFileIcon></UploadFileIcon>
-                                    <Input onChange={fileUploadHandle} sx={{ display: 'none' }} type='file' />
-                                </IconButton>
-                            </Tooltip>
+                        <Box sx={{textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div className='toolsWrapper' style={{alignSelf: 'flex-start', marginRight: '20px'}}>
+                                <Tooltip title="Upload File">
+                                    <IconButton component='label' sx={{ padding: '2px' }}>
+                                        <UploadFileIcon></UploadFileIcon>
+                                        <Input onChange={fileUploadHandle} sx={{ display: 'none' }} type='file' />
+                                    </IconButton>
+                                </Tooltip>
+                            </div>
+                            <Input onChange={handleSearch} sx={{ backgroundColor: 'white', maxHeight: '20px' }} type='text' />
                         </Box>
                     </Toolbar>
                 </AppBar>
             </Box>
             {updateMessage != null ?
-                <InfoSlide/> : ''
+                <InfoSlide messageData={updateMessage}/> : ''
             }
         </>
     );
 
 }
 
-export default Nav
+export default ToolBar

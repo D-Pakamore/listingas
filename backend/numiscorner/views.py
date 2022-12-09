@@ -94,6 +94,8 @@ def create_coin(request):
 
             default_image.save()
         else:
-            skipped_rows.append(index_label + 1)
+            skipped_rows.append(str(index_label + 1))
+
+    skipped_rows = ', '.join(skipped_rows)    
         
-    return Response(data={'message': 'data uploaded successfully', 'skipped_rows': skipped_rows})
+    return Response(data={'message': f'data uploaded successfully, skipped rows: {skipped_rows}', 'type': 'success'})

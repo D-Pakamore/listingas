@@ -1,3 +1,6 @@
 /backend/listingas
+/backend/media
 /backend/venv
+/backend/db.sqlite3
 /frontend/listingas/.next
+/frontend/listingas/node_modules

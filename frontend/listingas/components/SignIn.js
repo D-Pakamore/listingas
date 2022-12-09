@@ -11,54 +11,38 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 import jwt_decode from "jwt-decode";
 import Router from "next/router";
+import { loginUser } from '../pages/api/api';
 
 const theme = createTheme();
 
-export default function SignIn() {
+function SignIn() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const tmpData = new FormData(event.currentTarget);
-    const headers = {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-    }
-
     //getting user inputs
     const username = tmpData.get('username')
     const password = tmpData.get('password')
 
-    try {
-      const response = await axios({
-        url: "http://127.0.0.1:8000/user_auth/token/",
-        method: "POST",
-        headers: headers,
-        data: {
-          username: username,
-          password: password,
-        },
-      });
-      //if username and password exist
-      if (response.status > 199 && response.status < 401) {
-        const { data } = response;
-        const accesToken = data.access;
+    const response = await loginUser(username, password);
 
-        //decoding auth token to get user info
-        const userObject = jwt_decode(accesToken);
-        const userName = userObject.username;
-        const userId = userObject.user_id;
+    //if username and password exist
+    if (response.status > 199 && response.status < 401) {
+      const { data } = response;
+      const accesToken = data.access;
 
-        //setting cookies in user browser
-        document.cookie = `token=${accesToken}`;
-        document.cookie = `user=${userName}`;
-        document.cookie = `id=${userId}`;
-        Router.reload();
+      //decoding auth token to get user info
+      const userObject = jwt_decode(accesToken);
+      const userName = userObject.username;
+      const userId = userObject.user_id;
 
-      }
-    } catch (response_2) {
-      // console.log(response_2);
-    }
+      //setting cookies in user browser
+      document.cookie = `token=${accesToken}`;
+      document.cookie = `user=${userName}`;
+      document.cookie = `id=${userId}`;
+      Router.reload();
 
+    } else {console.log(response)} 
   };
 
   return (
@@ -114,3 +98,5 @@ export default function SignIn() {
     </ThemeProvider>
   );
 }
+
+export default SignIn;

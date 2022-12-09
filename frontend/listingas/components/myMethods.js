@@ -1,5 +1,7 @@
+import { useEffect } from "react"
+
 export const getUserData = () => {
-    
+
     const cookie = document.cookie
     const cookieObject = Object.fromEntries(cookie.split(';').map(item => item.split('=').map(arr => arr.trim())))
 
@@ -9,7 +11,7 @@ export const getUserData = () => {
         Authorization: `Bearer ${cookieObject.token}`,
     }
 
-    let result = {...cookieObject}
+    let result = { ...cookieObject }
     result.headers = headers
 
     return result
@@ -26,4 +28,20 @@ export const deleteItem = (id, dataSet) => {
     })
 
     return result
+}
+
+export const infiniteScrollPagination = (dataset, datasetSetter, showFromIndex, showToIndex) => {
+    
+    return (useEffect(function mount() {
+        const infiniteScroll = () => {
+            const endOfPage = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
+
+            if (endOfPage) {
+                showToIndex += 10
+                datasetSetter(dataset.slice(showFromIndex, showToIndex))
+            }
+        }
+
+        window.addEventListener("scroll", infiniteScroll);
+    }))
 }
