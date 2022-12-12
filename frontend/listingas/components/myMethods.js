@@ -30,18 +30,17 @@ export const deleteItem = (id, dataSet) => {
     return result
 }
 
-export const infiniteScrollPagination = (dataset, datasetSetter, showFromIndex, showToIndex) => {
+export const infiniteScrollPagination = (allData, currentlyShownData, setCurrentlyShownData, showItemsBy) => {
     
     return (useEffect(function mount() {
         const infiniteScroll = () => {
             const endOfPage = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
-
             if (endOfPage) {
-                showToIndex += 10
-                datasetSetter(dataset.slice(showFromIndex, showToIndex))
+                let shownDataLength = currentlyShownData.length
+                shownDataLength += showItemsBy
+                setCurrentlyShownData(allData.slice(0, shownDataLength))
             }
         }
-
         window.addEventListener("scroll", infiniteScroll);
     }))
 }

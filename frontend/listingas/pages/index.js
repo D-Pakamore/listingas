@@ -1,4 +1,4 @@
-import Layount from '../components/Layout';
+import Layount from '../components/global/Layout';
 import MessageBoard from '../components/MessageBoard';
 import axios from 'axios';
 import SignIn from '../components/SignIn';

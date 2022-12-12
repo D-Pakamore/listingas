@@ -9,7 +9,7 @@ import { Input } from '@mui/material';
 import InfoSlide from './popups/InfoSlide';
 import { uploadCsvRequest } from '../pages/api/api';
 
-const ToolBar = ({handleSearch}) => {
+const ToolBar = ({handleSearch, setLoading}) => {
     const [updateMessage, setUpdateMessage] = React.useState(null)
 
     const fileUploadHandle = (e) => {
@@ -32,8 +32,17 @@ const ToolBar = ({handleSearch}) => {
     }
 
     const uploadRequest = async (file) => {
+        //nav loading spinner
+        setLoading(true)
         const response = uploadCsvRequest(file)
-        response.then(response => {setUpdateMessage(response.data)}).catch(response => console.log(response))  
+        response.then(response => {
+            setUpdateMessage(response.data)
+            //nav loading spinner
+            setLoading(false)
+        }).catch(response => 
+            console.log(response),
+            setLoading(false)
+        )  
     }
 
     return (

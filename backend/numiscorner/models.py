@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.dispatch import receiver
 
 class Coin(models.Model):
     title = models.CharField(null=True, max_length=255, blank=True)
@@ -57,3 +58,12 @@ class Image(models.Model):
     reverse_image = models.ImageField(upload_to='numiscorner', default='../media/numiscorner/default_r.jpg')
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
+
+
+@receiver(models.signals.post_delete, sender=Image)
+def delete_image_file(sender, instance, **kwargs):
+    # Deletes Image Renditions
+    # instance.image.delete_all_created_images()
+    # Deletes Original Image
+    instance.obverse_image.delete(save=False)
+    instance.reverse_image.delete(save=False)

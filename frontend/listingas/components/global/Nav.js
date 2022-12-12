@@ -6,29 +6,28 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Link from 'next/link';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const navItems = {home: '/', numiscorner: '/numiscorner'};
 
-const Nav = () => {
+const Nav = ({loading}) => {
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar component="nav" sx={{ position: 'relative' }}>
                 <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        edge="start"
-                        sx={{ mr: 2, display: { sm: 'none' } }}
-                    >
-                        {/* <MenuIcon /> */}
-                    </IconButton>
-                    <Typography
-                        variant="h6"
-                        component="div"
-                        sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
-                    >
-                        Listingas
-                    </Typography>
+                    <div style={{flexGrow: '1', display: 'flex', alignItems: 'center'}}>
+                        <Typography
+                            variant="h6"
+                            component="div"
+                            sx={{ display: 'inline-block' }}
+                        >
+                            Listingas
+                        </Typography>
+                        {loading == true ? 
+                            <CircularProgress sx={{ marginLeft: '40px' }} size={30} color="secondary"/> : ''  
+                        }
+                        
+                    </div>
                     <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
                         {Object.keys(navItems).map((key) => (
                             <Link key={key} href={navItems[key]}>

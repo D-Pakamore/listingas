@@ -50,6 +50,9 @@ REST_FRAMEWORK = {
     ],
 }
 
+# post request limit if removed uses default (1000)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 100000000
+
 #JWT authentication settings, can be customized
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=30),

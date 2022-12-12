@@ -28,34 +28,39 @@ const filterItems = (searchString, dataSet) => {
 }
 
 export default function Home({data, status}) {
-  const [coinData, setCoinData] = useState(data)
+  const productsPerPage = 10
+  const [allData, setAllData] = useState(data)
+  const [displayedData, setDisplayedData] = useState(allData.slice(0, productsPerPage))
+  const [loading, setLoading] = useState(false)
 
-  // data handling with pagination
-  let firstItem = 0
-  let lastItem = 10
-  const [showItems, setShowItems] = useState(coinData.slice(firstItem,lastItem))
-  infiniteScrollPagination(coinData, setShowItems, firstItem, lastItem);
+  // preventing search and pagination interferance
+  let searchIsActive = false
+
+  // if search is active, pagination must be inactive
+    if (!searchIsActive) {
+      infiniteScrollPagination(allData, displayedData, setDisplayedData, productsPerPage);
+  }
 
   const deleteCoin = (id) => {
-    // state managment
-    const cleanData = deleteItem(id, coinData)
-    setCoinData(cleanData)
-    setShowItems(cleanData.slice(firstItem, lastItem))
+    const cleanData = deleteItem(id, allData)
 
-    //request managment
+    setAllData(cleanData)
+    setDisplayedData(cleanData.slice(0, productsPerPage))
     const response = deleteCoinRequest(id)
   }
 
   const handleSearch = (e) => {
     const userInput = e.target.value
+    const currentlyShownItems = displayedData.length
   
     if (userInput.includes(" ")) {
-      const searchResult = filterItems(userInput, coinData)
-      setShowItems(searchResult)
-      //disables pagination duo to bug if left while search is active
-      // window.removeEventListener("scroll");
+      const searchResult = filterItems(userInput, allData)
+
+      setAllData(searchResult)
+      setDisplayedData(searchResult.slice(0, currentlyShownItems))
     } else {
-      setShowItems(coinData.slice(firstItem, lastItem))
+      setAllData(data)
+      setDisplayedData(data.slice(0, 10))
     }
   }
 
@@ -69,9 +74,9 @@ export default function Home({data, status}) {
     )
   } else {
     return (
-      <Layount>
-        <ToolBar handleSearch={handleSearch}></ToolBar>
-        <CollapsibleTable deleteCoin={deleteCoin} coinData={showItems}></CollapsibleTable>
+      <Layount loading={loading}>
+        <ToolBar setLoading={setLoading} handleSearch={handleSearch}></ToolBar>
+        <CollapsibleTable deleteCoin={deleteCoin} coinData={displayedData}></CollapsibleTable>
       </Layount>
     )
   }
