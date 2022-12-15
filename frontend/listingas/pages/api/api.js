@@ -98,4 +98,46 @@ export const uploadCsvRequest = (file) => {
     }).catch(response => response)
 
     return response
-}   
+} 
+
+export const uploadImagesRequest = (coinId, files) => {
+    const {token} = getUserData()
+    const data = {'id': coinId, 'files': [...files]}
+
+    const headers = {
+        "Content-Type": "multipart/form-data",
+        "Accept": "application/json",
+        Authorization: `Bearer ${token}`,
+    }
+
+
+    const response = axios({
+        url: `http://127.0.0.1:8000/numiscorner_images/`,
+        method: "POST",
+        headers: headers,
+        data: data
+    }).catch(response => response)
+
+    return response
+}
+
+export const getCoinImagesRequest = (coinId) => {
+    const {token} = getUserData()
+    const data = {'id': coinId}
+
+    const headers = {
+        "Content-Type": "multipart/form-data",
+        "Accept": "application/json",
+        Authorization: `Bearer ${token}`,
+    }
+
+    const response = axios({
+        url: `http://127.0.0.1:8000/numiscorner_coins/${coinId}`,
+        method: "GET",
+        headers: headers,
+        // data: data
+
+    }).catch(response => response)
+
+    return response
+}

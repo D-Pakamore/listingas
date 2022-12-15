@@ -8,8 +8,9 @@ import Tooltip from '@mui/material/Tooltip';
 import { Input } from '@mui/material';
 import InfoSlide from './popups/InfoSlide';
 import { uploadCsvRequest } from '../pages/api/api';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 
-const ToolBar = ({handleSearch, setLoading}) => {
+const ToolBar = ({handleSearch, setLoading, coinCount}) => {
     const [updateMessage, setUpdateMessage] = React.useState(null)
 
     const fileUploadHandle = (e) => {
@@ -48,10 +49,12 @@ const ToolBar = ({handleSearch, setLoading}) => {
     return (
         <>
             <Box sx={{ display: 'flex' }}>
-                <AppBar sx={{ backgroundColor: 'grey', position: 'relative', maxHeight: '40px' }}>
+                <AppBar sx={{ backgroundColor: 'grey', position: 'relative', maxHeight: '40px'}}>
                     <Toolbar sx={{ display: 'contents' }}>
-                        <Box sx={{textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <div className='toolsWrapper' style={{alignSelf: 'flex-start', marginRight: '20px'}}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div style={{marginLeft: '50px'}}>Total coins: {coinCount}</div>
+                            <Input onChange={handleSearch} sx={{ backgroundColor: 'white', maxHeight: '20px' , width: '50%', maxWidth: '350px' }} type='text' />
+                            <div className='toolsWrapper' style={{alignSelf: 'flex-start', marginRight: '50px'}}>
                                 <Tooltip title="Upload File">
                                     <IconButton component='label' sx={{ padding: '2px' }}>
                                         <UploadFileIcon></UploadFileIcon>
@@ -59,7 +62,6 @@ const ToolBar = ({handleSearch, setLoading}) => {
                                     </IconButton>
                                 </Tooltip>
                             </div>
-                            <Input onChange={handleSearch} sx={{ backgroundColor: 'white', maxHeight: '20px' }} type='text' />
                         </Box>
                     </Toolbar>
                 </AppBar>

@@ -13,6 +13,10 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import DeleteForeverTwoToneIcon from '@mui/icons-material/DeleteForeverTwoTone';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import { Input } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
+
 
 const restruturizeDict = (coinData) => {
   let result = []
@@ -37,7 +41,7 @@ const restruturizeDict = (coinData) => {
   return result
 }
 
-function Row({ row, deleteCoin }) {
+function Row({ row, deleteCoin, addImages, toggleShowGallery }) {
   const [open, setOpen] = React.useState(false);
   const groupsByFour = restruturizeDict(row);
 
@@ -45,9 +49,17 @@ function Row({ row, deleteCoin }) {
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell sx={{ width: '20px' }}>
-          <IconButton size="small" aria-label="Delete Coin" onClick={() => deleteCoin(row.id)}>
-            <DeleteForeverTwoToneIcon/>
-          </IconButton>
+          <Tooltip title="Delete Coin">
+            <IconButton size="small" aria-label="Delete Coin" onClick={() => deleteCoin(row.id)}>
+              <DeleteForeverTwoToneIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Upload Images">
+            <IconButton size='small' component='label'>
+              <AddPhotoAlternateIcon />
+              <Input onChange={event => addImages(event, row.id)} sx={{ display: 'none' }} type='file' inputProps={{ multiple: true }} />
+            </IconButton>
+          </Tooltip>
           <IconButton
             aria-label="expand row"
             size="small"
@@ -58,18 +70,20 @@ function Row({ row, deleteCoin }) {
         </TableCell>
         <TableCell sx={{ width: '135px' }} scope="row">
           <img
-            style={{ width: "100px" }}
+            style={{ cursor: 'pointer', width: "100px" }}
             src={row.image_set[0].obverse_image}
             alt="No Image"
             loading="lazy"
+            onClick={() => toggleShowGallery(row.id, window.pageYOffset)}
           />
         </TableCell>
         <TableCell scope="row">
           <img
-            style={{ width: "100px" }}
+            style={{ cursor: 'pointer', width: "100px" }}
             src={row.image_set[0].reverse_image}
             alt="No Image"
             loading="lazy"
+            onClick={() => toggleShowGallery(row.id, window.pageYOffset)}
           />
         </TableCell>
         <TableCell>{row.country}</TableCell>
@@ -111,8 +125,8 @@ function Row({ row, deleteCoin }) {
   );
 }
 
-export default function CollapsibleTable({deleteCoin, coinData }) {
-  
+export default function CollapsibleTable({ deleteCoin, coinData, addImages, toggleShowGallery }) {
+
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -128,7 +142,7 @@ export default function CollapsibleTable({deleteCoin, coinData }) {
         </TableHead>
         <TableBody>
           {coinData.map((data, index) => (
-            <Row key={index} row={data} deleteCoin={deleteCoin}/>
+            <Row key={index} row={data} deleteCoin={deleteCoin} addImages={addImages} toggleShowGallery={toggleShowGallery} />
           ))}
         </TableBody>
       </Table>
