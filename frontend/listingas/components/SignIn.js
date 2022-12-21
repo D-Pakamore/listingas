@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -8,42 +7,10 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import axios from 'axios';
-import jwt_decode from "jwt-decode";
-import Router from "next/router";
-import { loginUser } from '../pages/api/api';
 
 const theme = createTheme();
 
-function SignIn() {
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const tmpData = new FormData(event.currentTarget);
-    //getting user inputs
-    const username = tmpData.get('username')
-    const password = tmpData.get('password')
-
-    const response = await loginUser(username, password);
-
-    //if username and password exist
-    if (response.status > 199 && response.status < 401) {
-      const { data } = response;
-      const accesToken = data.access;
-
-      //decoding auth token to get user info
-      const userObject = jwt_decode(accesToken);
-      const userName = userObject.username;
-      const userId = userObject.user_id;
-
-      //setting cookies in user browser
-      document.cookie = `token=${accesToken}`;
-      document.cookie = `user=${userName}`;
-      document.cookie = `id=${userId}`;
-      Router.reload();
-
-    } else {console.log(response)} 
-  };
+function SignIn({loginUser}) {
 
   return (
     <ThemeProvider theme={theme}>
@@ -63,7 +30,7 @@ function SignIn() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={(event) => loginUser(event)} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required

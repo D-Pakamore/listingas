@@ -23,6 +23,7 @@ urlpatterns = [
     #authentication
     path('user_auth/', include(auth_urls)),
     path('api-token-auth/', views.obtain_auth_token),
-    # my urls
+    # my urls !!!!! patvarkyti create_numiscorner_coin i numiscorner/create_coin
     path('create_numiscorner_coin', numiscorner_views.create_coin),
+    path('cheange_image_order', numiscorner_views.change_image_order),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

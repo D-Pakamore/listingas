@@ -10,12 +10,12 @@ import requests
 import io
 import numpy
 import random
+import json
 
 def save_image(image: bytes, image_name: str) -> str | None:
     """-> path to image | None"""
     # path to image excluding default media folder "numiscorner/image_name.png"
     path_to_image = None
-    print(image_name)
     image_name = image_name.replace(" ", "_")
 
     with PIL.Image.open(image) as image:
@@ -63,7 +63,7 @@ class CoinViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
 
 class ImageViewSet(viewsets.ModelViewSet):
-    queryset = Image.objects.all()
+    queryset = Image.objects.all().order_by('order').values()
     serializer_class = ImageSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -73,27 +73,21 @@ class ImageViewSet(viewsets.ModelViewSet):
         images = get_files_from_request(request.FILES.getlist('files[]'))
 
         coin = Coin.objects.get(id=coin_id)
-        
-        # images must be in pairs of 2
-        if len(images) % 2 != 0:
-            return Response(data={'message': f'images must be in pairs by two, images given: {len(images)}', 'type': 'fail'})
 
         # itterate image pairs by 2
-        for i in range(0, int(len(images)), 2):
+        for i in range(len(images)):
             obverse_image = images[i]
-            reverse_image = images[i + 1]
 
             #saving to local storage
             random_number = str(random.randint(1000, 10000000))
-            first_image_name = random_number + '_' + obverse_image.name
-            second_image_name = random_number + '_' + reverse_image.name
-
-            obverse_image_path = save_image(obverse_image.file, first_image_name)
-            reverse_image_path = save_image(reverse_image.file, second_image_name)
+            image_name = random_number + '_' + obverse_image.name
+            obverse_image_path = save_image(obverse_image.file, image_name)
+            #query descending order image objects and take the highest order plus one
+            order_number = Image.objects.all().order_by('-order').values()[0]['order'] + 1
 
             create_image = Image(coin = coin,
-                obverse_image = obverse_image_path, 
-                reverse_image = reverse_image_path
+                obverse_image = obverse_image_path,
+                order = order_number
             )
             create_image.save()
 
@@ -137,18 +131,17 @@ def create_coin(request):
 
             # attaching image for new coin instance
             latest_coin = Coin.objects.all().order_by('-id')[0]
+            #query descending order image objects and take the highest order plus one
+            order_number = Image.objects.all().order_by('-order').values()[0]['order'] + 1
 
             if len(images) != 0:
                 default_image = Image(coin = latest_coin, 
                 obverse_image_url = image_urls[0], 
                 reverse_image_url = image_urls[1], 
                 obverse_image = images[0], 
-                reverse_image = images[1]
+                reverse_image = images[1],
+                order = order_number
                 )
-            else:
-                default_image = Image(coin=latest_coin)
-
-            default_image.save()
         else:
             skipped_rows.append(str(index_label + 1))
 
@@ -156,5 +149,12 @@ def create_coin(request):
         
     return Response(data={'message': f'data uploaded successfully, skipped rows: {skipped_rows}', 'type': 'success'})
 
-# @api_view(['GET'])
-# def getCoinImages(request):
+@api_view(['POST'])
+def change_image_order(request):
+    data = request.data
+
+    # for item in data:
+    #     print("=======================")
+    #     print(item)
+
+    return Response(data={'message': f'data uploaded successfully, skipped rows:', 'type': 'success'})

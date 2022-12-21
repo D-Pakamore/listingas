@@ -52,10 +52,11 @@ class Coin(models.Model):
 
 class Image(models.Model):
     coin = models.ForeignKey(Coin, on_delete=models.CASCADE)
-    obverse_image_url = models.CharField(max_length=255, default='default')
-    reverse_image_url  = models.CharField(max_length=255, default='default')
-    obverse_image = models.ImageField(upload_to='numiscorner', default='../media/numiscorner/default_o.jpg')
-    reverse_image = models.ImageField(upload_to='numiscorner', default='../media/numiscorner/default_r.jpg')
+    order = models.IntegerField(null=False)
+    obverse_image_url = models.CharField(max_length=255, null=True)
+    reverse_image_url  = models.CharField(max_length=255, null=True)
+    obverse_image = models.ImageField(upload_to='numiscorner', null=True)
+    reverse_image = models.ImageField(upload_to='numiscorner', null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 

@@ -12,18 +12,26 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import { getUserData } from './myMethods';
 import Box from '@mui/material/Box';
-import { deleteUserMessageRequest } from '../pages/api/api';
 
-const MessageBoard = ({ messageData }) => {
-  //state
+const MessageBoard = ({ messageData, deleteUserMessageRequest, createUserMessageRequest}) => {
   const [messages, setMessages] = React.useState(messageData)
 
   //functions
-  const addMessage = (newMessage) => {
+  const addMessage = (event) => {
+    event.preventDefault();
     let cleanMessages = [...messages]
 
-    cleanMessages.push(newMessage)
-    setMessages(cleanMessages)
+    const tmpData = new FormData(event.currentTarget);
+    const userMessage = tmpData.get('message')
+    const {id, user } = getUserData()
+
+
+    createUserMessageRequest(userMessage, id).then(response => {
+      const {data} = response
+      cleanMessages.push(data)
+      setMessages(cleanMessages)
+
+    }).catch(response => console.log(response))
   }
 
   async function deleteMessage(deletedMessageId){

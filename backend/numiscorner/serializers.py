@@ -3,8 +3,9 @@ from numiscorner.models import Coin, Image
 
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
+        image_fields = [field.name for field in Image._meta.get_fields()]
         model = Image
-        fields = '__all__'
+        fields = image_fields
 
 class CoinSerializer(serializers.HyperlinkedModelSerializer):
     image_set = ImageSerializer(read_only=True, many=True)
