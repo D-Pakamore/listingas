@@ -5,7 +5,7 @@ from django.dispatch import receiver
 class Coin(models.Model):
     title = models.CharField(null=True, max_length=255, blank=True)
     subtitle = models.CharField(null=True, max_length=255, blank=True)
-    price = models.FloatField(null=True, blank=True)
+    price = models.FloatField(blank=True, null=True)
     grade = models.CharField(null=True, max_length=100, blank=True)
     sold = models.CharField(null=True, max_length=50, blank=True)
     obverse_description = models.CharField(null=True, max_length=255, blank=True)
@@ -15,7 +15,7 @@ class Coin(models.Model):
     numiscorner_id = models.IntegerField(null=True, blank=True)
     product_url = models.CharField(null=True, max_length=255, blank=True)
     country = models.CharField(null=True, max_length=100, blank=True)
-    denomination = models.CharField(null=True, max_length=100)
+    denomination = models.CharField(null=True, max_length=100, blank=True)
     year = models.CharField(null=True, max_length=100, blank=True)
     coin_condition = models.CharField(null=True, max_length=100, blank=True)
     mint_name = models.CharField(null=True, max_length=100, blank=True)
@@ -43,7 +43,7 @@ class Coin(models.Model):
     coin_shape = models.CharField(null=True, max_length=100, blank=True)
     certification = models.CharField(null=True, max_length=100, blank=True)
     certification_number = models.IntegerField(null=True, blank=True)
-    series_theme = models.CharField(null=True, max_length=100)
+    series_theme = models.CharField(null=True, max_length=100, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
@@ -51,20 +51,22 @@ class Coin(models.Model):
         return ' '.join([self.denomination, self.country])
 
 class Image(models.Model):
-    coin = models.ForeignKey(Coin, on_delete=models.CASCADE)
+    coin_id = models.ForeignKey(Coin, on_delete=models.CASCADE)
     order = models.IntegerField(null=False)
-    obverse_image_url = models.CharField(max_length=255, null=True)
-    reverse_image_url  = models.CharField(max_length=255, null=True)
-    obverse_image = models.ImageField(upload_to='numiscorner', null=True)
-    reverse_image = models.ImageField(upload_to='numiscorner', null=True)
+    image_url = models.CharField(max_length=255, null=True)
+    pictogram = models.ImageField(upload_to='numiscorner/pictograms', null=True)
+    image = models.ImageField(upload_to='numiscorner', null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('order',)
 
 
 @receiver(models.signals.post_delete, sender=Image)
 def delete_image_file(sender, instance, **kwargs):
     # Deletes Image Renditions
-    # instance.image.delete_all_created_images()
     # Deletes Original Image
-    instance.obverse_image.delete(save=False)
-    instance.reverse_image.delete(save=False)
+    instance.pictogram.delete(save=False)
+    instance.image.delete(save=False)
+    

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -6,13 +6,12 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Link from 'next/link';
-import CircularProgress from '@mui/material/CircularProgress';
 
 const navItems = {home: '/', numiscorner: '/numiscorner'};
 
-const Nav = ({loading}) => {
+const Nav = () => {
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex', position: 'sticky' }}>
             <AppBar component="nav" sx={{ position: 'relative' }}>
                 <Toolbar>
                     <div style={{flexGrow: '1', display: 'flex', alignItems: 'center'}}>
@@ -22,11 +21,7 @@ const Nav = ({loading}) => {
                             sx={{ display: 'inline-block' }}
                         >
                             Listingas
-                        </Typography>
-                        {loading == true ? 
-                            <CircularProgress sx={{ marginLeft: '40px' }} size={30} color="secondary"/> : ''  
-                        }
-                        
+                        </Typography> 
                     </div>
                     <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
                         {Object.keys(navItems).map((key) => (

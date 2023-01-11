@@ -1,9 +1,9 @@
 import Nav from './Nav';
 
-const Layout = ({ children, loading }) => {
+const Layout = ({ children }) => {
     return (
         <>
-            <Nav loading={loading}/>
+            <Nav/>
             {children}
         </>
     )

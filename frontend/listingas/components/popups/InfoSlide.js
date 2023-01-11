@@ -6,14 +6,14 @@ import ReplayCircleFilledTwoToneIcon from '@mui/icons-material/ReplayCircleFille
 import IconButton from '@mui/material/IconButton';
 
 //message data must contain keys: message: (string), type: (srting)
-const InfoSlide = ({ messageData }) => {
+const InfoSlide = ({ infoMessage }) => {
     return (
         <Stack sx={{zIndex: '1', backgroundColor: '#c6e2e9', width: '100%', position: 'absolute', overflow: 'hidden'}}>
             {
-                messageData.type = 'success' ?
-                <Alert sx={{width: '100%', justifyContent: 'center'}} severity="success">{messageData.message}</Alert>
+                infoMessage.type == 'success' ?
+                <Alert sx={{width: '100%', justifyContent: 'center'}} severity="success">{infoMessage.message}</Alert>
                 :
-                <Alert sx={{width: '100%', justifyContent: 'center'}} severity="warning">{messageData.message}</Alert>
+                <Alert sx={{width: '100%', justifyContent: 'center'}} severity="warning">{infoMessage.message}</Alert>
             }
             <IconButton onClick={()=> Router.reload()} component='label' sx={{ flexDirection:'column', fontSize: '14px', padding: '2px' }}>
                 <p style={{margin:'0'}}>Click to refresh</p>

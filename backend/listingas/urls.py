@@ -13,6 +13,7 @@ router = routers.DefaultRouter()
 
 router.register(r'information', quickstart_views.InformationBoardViewSet)
 router.register(r'numiscorner_coins', numiscorner_views.CoinViewSet)
+router.register(r'numiscorner_coins_without_pagination', numiscorner_views.CoinWithoutPaginationViewSet)
 router.register(r'numiscorner_images', numiscorner_views.ImageViewSet)
 
 urlpatterns = [
@@ -25,5 +26,5 @@ urlpatterns = [
     path('api-token-auth/', views.obtain_auth_token),
     # my urls !!!!! patvarkyti create_numiscorner_coin i numiscorner/create_coin
     path('create_numiscorner_coin', numiscorner_views.create_coin),
-    path('cheange_image_order', numiscorner_views.change_image_order),
+    path('cheange_image_order/', numiscorner_views.change_image_order),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

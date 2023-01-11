@@ -5,7 +5,7 @@ from numiscorner.models import Image, Coin
 class ImageAdmin(admin.ModelAdmin):
     readonly_fields = ['date_created', 'date_modified']
     all_fields = [field.name for field in Image._meta.get_fields()][1:]
-    list_display = ['coin', 'date_created', 'date_modified']
+    list_display = ['coin_id', 'date_created', 'date_modified']
     fields = all_fields
 
 

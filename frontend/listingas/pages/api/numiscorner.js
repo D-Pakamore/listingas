@@ -11,20 +11,20 @@ import axios from "axios";
 
 export const deleteCoinRequest = (id) => {
     const { headers } = getUserData()
-  
-  
+
+
     const response = axios({
         url: `http://127.0.0.1:8000/numiscorner_coins/${id}`,
         method: "DELETE",
         headers: headers,
     })
-    .catch(response => response)
+        .catch(response => response)
 
     return response
 }
 
 export const uploadCsvRequest = (file) => {
-    const {token} = getUserData()
+    const { token } = getUserData()
 
     const headers = {
         "Content-Type": "multipart/form-data",
@@ -43,11 +43,11 @@ export const uploadCsvRequest = (file) => {
     }).catch(response => response)
 
     return response
-} 
+}
 
 export const uploadImagesRequest = (coinId, files) => {
-    const {token} = getUserData()
-    const data = {'id': coinId, 'files': [...files]}
+    const { token } = getUserData()
+    const data = { 'id': coinId, 'files': [...files] }
 
     const headers = {
         "Content-Type": "multipart/form-data",
@@ -67,8 +67,8 @@ export const uploadImagesRequest = (coinId, files) => {
 }
 
 export const getCoinImagesRequest = (coinId) => {
-    const {token} = getUserData()
-    const data = {'id': coinId}
+    const { token } = getUserData()
+    const data = { 'id': coinId }
 
     const headers = {
         "Content-Type": "multipart/form-data",
@@ -84,31 +84,70 @@ export const getCoinImagesRequest = (coinId) => {
 
     }).catch(response => response)
 
+    console.log(response)
+
     return response
 }
 
 export const changeImagesOrderRequest = (imagesData) => {
     let data = []
-    const {token} = getUserData()
-    
+    const { token } = getUserData()
+
     imagesData.forEach(element => {
         if (element.moved) {
-        data.push(element)
+            data.push(element)
         }
     });
-    console.log(data)
 
     const headers = {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
         "Accept": "application/json",
         Authorization: `Bearer ${token}`,
     }
 
     const response = axios({
-        url: `http://127.0.0.1:8000/cheange_image_order`,
+        url: `http://127.0.0.1:8000/cheange_image_order/`,
         method: "POST",
         headers: headers,
-        data: {data: data}
+        data: {
+            data: data
+        }
+
+    }).catch(response => response)
+
+    return response
+}
+
+export const nextPageDataRequest = (requestEndpoint) => {
+    const { token } = getUserData()
+
+    const headers = {
+        "Accept": "application/json",
+        Authorization: `Bearer ${token}`,
+    }
+
+    const response = axios({
+        url: `${requestEndpoint}`,
+        method: "GET",
+        headers: headers,
+
+    }).catch(response => response)
+
+    return response
+}
+
+export const getAllCoinsRequest = () => {
+    const { token } = getUserData()
+
+    const headers = {
+        "Accept": "application/json",
+        Authorization: `Bearer ${token}`,
+    }
+
+    const response = axios({
+        url: "http://127.0.0.1:8000/numiscorner_coins_without_pagination",
+        method: "GET",
+        headers: headers,
 
     }).catch(response => response)
 

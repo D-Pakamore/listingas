@@ -34,7 +34,7 @@ export default function Home({ data, status, message }) {
       document.cookie = `id=${userId}`;
       Router.reload();
 
-    } else {console.log(response)} 
+    } else { console.log(response) }
   };
 
   if (status == 200) {
@@ -66,17 +66,26 @@ export async function getServerSideProps(context) {
   }
 
   const response = await axios.get('http://127.0.0.1:8000/information', header
-  ).catch((res) => {
-    if (res.response.status === 401) {
-      // message = 'Please check your password and username'
-    }
-  })
+  ).catch(res => res.response)
 
-  const { status } = response != undefined ? response : { status: 404 }
-  const { data } = response != undefined ? response : { data: null }
+
+  const { status } = response
+
+  if (status > 199 && status < 401) {
+    const { data } = response
+    var { count, next, previous, results } = data
+
+  } else {
+    var results  = null
+  }
+  
+
+
+  
+
   return {
     props: {
-      data: data,
+      data: results,
       status: status,
       message: message,
     },

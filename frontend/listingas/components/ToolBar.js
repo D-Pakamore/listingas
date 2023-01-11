@@ -9,7 +9,7 @@ import { Input } from '@mui/material';
 import InfoSlide from './popups/InfoSlide';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 
-const ToolBar = ({ handleSearch, setLoading, coinCount, csvUpload }) => {
+const ToolBar = ({ setLoading, handleSearch, coinCount, csvUpload, handleSetSearchData, clearSearchData }) => {
     const [updateMessage, setUpdateMessage] = React.useState(null)
 
     return (
@@ -19,12 +19,27 @@ const ToolBar = ({ handleSearch, setLoading, coinCount, csvUpload }) => {
                     <Toolbar sx={{ display: 'contents' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <div style={{ marginLeft: '50px' }}>Total coins: {coinCount}</div>
-                            <Input onChange={handleSearch} sx={{ backgroundColor: 'white', maxHeight: '20px', width: '50%', maxWidth: '350px' }} type='text' />
+                            <Input
+                                onBlur={clearSearchData}
+                                onClick={handleSetSearchData}
+                                onChange={handleSearch}
+                                sx={{
+                                    backgroundColor: 'white',
+                                    maxHeight: '20px',
+                                    width: '50%',
+                                    maxWidth: '350px'
+                                }}
+                                type='text'
+                            />
                             <div className='toolsWrapper' style={{ alignSelf: 'flex-start', marginRight: '50px' }}>
                                 <Tooltip title="Upload File">
                                     <IconButton component='label' sx={{ padding: '2px' }}>
                                         <UploadFileIcon></UploadFileIcon>
-                                        <Input onChange={(event) => csvUpload(event)} sx={{ display: 'none' }} type='file' />
+                                        <Input
+                                            onChange={(event) => { csvUpload(event); setLoading(true) }}
+                                            sx={{ display: 'none' }}
+                                            type='file'
+                                        />
                                     </IconButton>
                                 </Tooltip>
                             </div>

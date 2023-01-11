@@ -2,10 +2,12 @@ import Layount from '../../components/global/Layout'
 import CollapsibleTable from '../../components/CollapsibleTable'
 import SpotlightGallery from '../../components/SpotlightGallery';
 import ToolBar from '../../components/ToolBar'
+import LoadingSpinner from '../../components/LoadingSpinner';
+import InfoSlide from '../../components/popups/InfoSlide';
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { infiniteScrollPagination, deleteItem, fileUploadHandle } from '../../components/myMethods';
-import { deleteCoinRequest, uploadImagesRequest, getCoinImagesRequest, uploadCsvRequest, changeImagesOrderRequest } from '../api/numiscorner';
+import { deleteCoinRequest, uploadImagesRequest, getCoinImagesRequest, uploadCsvRequest, changeImagesOrderRequest, nextPageDataRequest, getAllCoinsRequest } from '../api/numiscorner';
 
 
 const filterItems = (searchString, dataSet) => {
@@ -28,30 +30,57 @@ const filterItems = (searchString, dataSet) => {
   return result
 }
 
-export default function Home({ data, status }) {
-  const productsPerPage = 10
+export default function Home({ data, nextPage, previousPage, count, status }) {
   const [allData, setAllData] = useState(data)
-  const [displayedData, setDisplayedData] = useState(allData.slice(0, productsPerPage))
+  const [dataCount, setDataCount] = useState(count)
+  const [nextPageEndpoint, setNextPageEndpoint] = useState(nextPage)
+  const [searchData, setSearchData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [showGallery, setShowGallery] = useState(false)
+  const [infoMessage, setInfoMessage] = useState(null)
 
-  // preventing search and pagination interferance
-  let searchIsActive = false
+  const pagination = async () => {
+    const endOfPage = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
 
-  // if search is active, pagination must be inactive
-  if (!searchIsActive) {
-    infiniteScrollPagination(allData, displayedData, setDisplayedData, productsPerPage);
+    if (endOfPage && searchData === null) {
+      setLoading(true)
+      const { data } = await nextPageDataRequest(nextPageEndpoint)
+      const { count, next, previous, results } = data
+      const newData = [...allData, ...results]
+
+      setAllData(newData)
+      setDataCount(count)
+      setNextPageEndpoint(next)
+
+      setLoading(false)
+    }
   }
+
+  const handleSetSearchData = async () => {
+    const { data } = await getAllCoinsRequest()
+    const { results } = data
+    setSearchData(results)
+  }
+
+  const clearSearchData = () => {
+    setSearchData(null)
+    setAllData(data)
+  }
+
+  useEffect(() => {
+    window.addEventListener("scroll", pagination);
+
+    return () => window.removeEventListener("scroll", pagination);
+  })
 
   const deleteCoin = (id) => {
     const cleanData = deleteItem(id, allData)
 
     setAllData(cleanData)
-    setDisplayedData(cleanData.slice(0, productsPerPage))
     const response = deleteCoinRequest(id)
   }
 
-  const csvUpload = (event) => {
+  const csvUpload = async (event) => {
     event.preventDefault()
 
     try {
@@ -63,34 +92,28 @@ export default function Home({ data, status }) {
     }
 
     if (extension === 'csv') {
-      //nav loading spinner
       setLoading(true)
-      const response = uploadCsvRequest(file)
-      response.then(response => {
-        setUpdateMessage(response.data)
-        //nav loading spinner
-        setLoading(false)
-      }).catch(response =>
-        console.log(response),
-        setLoading(false)
-      )
+      const response = await uploadCsvRequest(file)
+
+      const { data } = response
+
+      setLoading(false)
+      setInfoMessage(data)
+
+
     } else {
       console.log(`Please choose csv file, you have chosen: ${extension}`)
     }
+
   }
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     const userInput = e.target.value
-    const currentlyShownItems = displayedData.length
 
     if (userInput.includes(" ")) {
-      const searchResult = filterItems(userInput, allData)
+      const searchResult = filterItems(userInput, searchData)
 
       setAllData(searchResult)
-      setDisplayedData(searchResult.slice(0, currentlyShownItems))
-    } else {
-      setAllData(data)
-      setDisplayedData(data.slice(0, 10))
     }
   }
 
@@ -102,8 +125,6 @@ export default function Home({ data, status }) {
 
     if (result.succes) {
       const response = uploadImagesRequest(result.id, files)
-      console.log(response)
-      console.log('here')
     } else {
       console.log(result.message)
     }
@@ -142,15 +163,33 @@ export default function Home({ data, status }) {
     )
   } else {
     return (
-      <Layount loading={loading}>
+      <Layount>
+        {loading ? <LoadingSpinner /> : null}
         <ToolBar
-          coinCount={allData.length}
-          setLoading={setLoading}
+          coinCount={dataCount}
           handleSearch={handleSearch}
           csvUpload={csvUpload}
+          setLoading={setLoading}
+          handleSetSearchData={handleSetSearchData}
+          clearSearchData={clearSearchData}
         />
-        <CollapsibleTable toggleShowGallery={toggleShowGallery} addImages={addImages} deleteCoin={deleteCoin} coinData={displayedData}></CollapsibleTable>
-        {showGallery ? <SpotlightGallery showGallery={showGallery} closeOpenGallery={closeOpenGallery} /> : null}
+        {infoMessage ?
+          <InfoSlide
+            infoMessage={infoMessage}
+          />
+          : null}
+        <CollapsibleTable
+          toggleShowGallery={toggleShowGallery}
+          addImages={addImages}
+          deleteCoin={deleteCoin}
+          coinData={allData}
+        />
+        {showGallery ?
+          <SpotlightGallery
+            showGallery={showGallery}
+            closeOpenGallery={closeOpenGallery}
+          />
+          : null}
       </Layount>
     )
   }
@@ -158,23 +197,34 @@ export default function Home({ data, status }) {
 
 export async function getServerSideProps(context) {
   const token = context.req?.cookies?.token
-  let statusCode = null
 
-  const { data } = await axios.get('http://127.0.0.1:8000/numiscorner_coins', {
+  const response = await axios.get('http://127.0.0.1:8000/numiscorner_coins', {
     headers: { Authorization: `Bearer ${token}` },
-    validateStatus: (status) => {
+  }).catch(res => {
+    const data = {}
+    const { response } = res
 
-      statusCode = status
-      return status < 500
-    }
+    data.statusText = response.statusText
+    data.count = null
+    data.next = null
+    data.previous = null
+    data.results = null
+
+    return { data: data, status: response.status }
   })
 
+  console.log(response)
 
+  const { count, next, previous, results } = response.data
+  const { status } = response
 
   return {
     props: {
-      data: data,
-      status: statusCode
+      data: results,
+      nextPage: next,
+      previousPage: previous,
+      count: count,
+      status: status
     },
   }
 }

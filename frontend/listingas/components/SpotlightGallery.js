@@ -3,6 +3,7 @@ import StandardImageList from './StandartImageList';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import { useState } from 'react';
+import Router from 'next/router'
 
 const mainWrapperStyles = (pageYOffset) => {
     return {
@@ -38,25 +39,21 @@ const SpotlightGallery = ({ showGallery, closeOpenGallery}) => {
         })
     }
 
+    const confirmImageOrder = () => {
+        closeOpenGallery(imageDataLifted)
+        Router.reload()
+    }
+
     return (
         <Box sx={() => mainWrapperStyles(pageYOffset)}>
             <div style={{ width: '100%', textAlign: 'end' }}>
-                <CheckIcon sx={{ cursor: 'pointer', marginRight: '10px' }} onClick={() => closeOpenGallery(imageDataLifted)} />
+                <CheckIcon sx={{ cursor: 'pointer', marginRight: '10px' }} onClick={confirmImageOrder} />
                 <CloseIcon sx={{ cursor: 'pointer' }} onClick={() => closeOpenGallery()} />
             </div>
             <div style={{ textAlign: "center" }}>
                 <a href={spotlightImage.obverse_image} target="_blank">
                     <img
-                        src={spotlightImage.obverse_image}
-                        // alt={item.title}
-                        loading="lazy"
-                        style={{ width: '25%', objectFit: 'contain' }}
-                    />
-                </a>
-                <a href={spotlightImage.reverse_image} target="_blank">
-                    <img
-                        src={spotlightImage.reverse_image}
-                        // alt={item.title}
+                        src={spotlightImage.image}
                         loading="lazy"
                         style={{ width: '25%', objectFit: 'contain' }}
                     />

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Fragment, useState } from 'react'
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -42,11 +42,13 @@ const restruturizeDict = (coinData) => {
 }
 
 function Row({ row, deleteCoin, addImages, toggleShowGallery }) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [obverseImage, setObverseImage] = useState(row.image_set.length > 0 ? row.image_set[0].pictogram : null);
+  const [reverseImage, setReverseImage] = useState(row.image_set.length > 1 ? row.image_set[1].pictogram : null);
   const groupsByFour = restruturizeDict(row);
 
   return (
-    <React.Fragment>
+    <Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell sx={{ width: '20px' }}>
           <Tooltip title="Delete Coin">
@@ -70,8 +72,8 @@ function Row({ row, deleteCoin, addImages, toggleShowGallery }) {
         </TableCell>
         <TableCell sx={{ width: '135px' }} scope="row">
           <img
-            style={{ cursor: 'pointer', width: "100px" }}
-            src={row.image_set[0].obverse_image}
+            style={{ cursor: 'pointer', width: "100px", }}
+            src={obverseImage}
             alt="No Image"
             loading="lazy"
             onClick={() => toggleShowGallery(row.id, window.pageYOffset)}
@@ -80,7 +82,7 @@ function Row({ row, deleteCoin, addImages, toggleShowGallery }) {
         <TableCell scope="row">
           <img
             style={{ cursor: 'pointer', width: "100px" }}
-            src={row.image_set[0].reverse_image}
+            src={reverseImage}
             alt="No Image"
             loading="lazy"
             onClick={() => toggleShowGallery(row.id, window.pageYOffset)}
@@ -99,7 +101,7 @@ function Row({ row, deleteCoin, addImages, toggleShowGallery }) {
               </Typography>
               <Table size="small" aria-label="purchases">
                 {groupsByFour.map((list, index) => (
-                  <React.Fragment key={index}>
+                  <Fragment key={index}>
                     <TableHead>
                       <TableRow>
                         {list.map((dict, index) => (
@@ -114,14 +116,14 @@ function Row({ row, deleteCoin, addImages, toggleShowGallery }) {
                         ))}
                       </TableRow>
                     </TableBody>
-                  </React.Fragment>
+                  </Fragment>
                 ))}
               </Table>
             </Box>
           </Collapse>
         </TableCell>
       </TableRow>
-    </React.Fragment>
+    </Fragment>
   );
 }
 

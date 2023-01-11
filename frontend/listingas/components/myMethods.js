@@ -35,6 +35,7 @@ export const infiniteScrollPagination = (allData, currentlyShownData, setCurrent
     return (useEffect(function mount() {
         const infiniteScroll = () => {
             const endOfPage = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
+            
             if (endOfPage) {
                 let shownDataLength = currentlyShownData.length
                 shownDataLength += showItemsBy
